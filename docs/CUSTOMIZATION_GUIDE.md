@@ -26,6 +26,11 @@ claude-code-config-zh/
 ├── CLAUDE.md              # 主配置入口（必须保留）
 ├── AGENTS.md              # 代理说明文档
 │
+├── contexts/              # 工作模式上下文（3个）
+│   ├── dev.md             # 开发模式：先写代码，后解释
+│   ├── review.md          # 审查模式：先读代码，再评论
+│   └── research.md        # 研究模式：先理解，后行动
+│
 ├── rules/                 # 【重点】编码规范 - 最常修改
 │   ├── common/            # 通用规则（9个文件）
 │   ├── javascript/        # JavaScript 规则（5个文件）
@@ -33,9 +38,18 @@ claude-code-config-zh/
 │   └── golang/            # Go 规则（5个文件）
 │
 ├── agents/                # 代理配置（9个）
-├── commands/              # 斜杠命令（9个）
-├── skills/                # 技能模块（8个）
+├── commands/              # 斜杠命令（12个）
+├── skills/                # 技能模块（11个）
 ├── hooks/                 # 可选钩子
+│
+├── scripts/               # 工具脚本
+│   ├── lib/               # 工具函数库
+│   │   └── utils.js       # 跨平台工具函数
+│   └── validate-config.js # 配置验证脚本
+│
+├── docs/                  # 文档
+│   └── CUSTOMIZATION_GUIDE.md  # 本指南
+│
 └── tests/                 # 配置验证测试
 ```
 
@@ -43,11 +57,13 @@ claude-code-config-zh/
 
 | 目录 | 作用 | 修改频率 | 新手建议 |
 |------|------|---------|---------|
+| `contexts/` | 工作模式切换（开发/审查/研究） | 低 | 按需切换 |
 | `rules/` | 定义编码规范、风格、安全要求 | **高** | 从这里开始 |
 | `agents/` | 定义代理行为、工具权限 | 中 | 熟悉后再改 |
 | `commands/` | 定义用户命令入口 | 低 | 基本不改 |
 | `skills/` | 提供领域知识和示例 | 低 | 按需扩展 |
 | `hooks/` | 自动化检查 | 低 | 可选启用 |
+| `scripts/` | 工具函数和验证脚本 | 低 | 基本不改 |
 
 ### 1.3 配置文件格式
 
@@ -502,6 +518,7 @@ agents/
 
 | 命令文件 | 触发方式 | 用途 | 是否保留 |
 |---------|---------|------|---------|
+| `context.md` | `/context` | 切换工作模式 | **保留** |
 | `plan.md` | `/plan` | 实现规划 | **保留** |
 | `tdd.md` | `/tdd` | TDD 开发 | 按需保留 |
 | `code-review.md` | `/code-review` | 代码审查 | **保留** |
@@ -511,8 +528,30 @@ agents/
 | `verify.md` | `/verify` | 验证检查 | **保留** |
 | `go-review.md` | `/go-review` | Go 审查 | 使用 Go 则保留 |
 | `javascript-review.md` | `/javascript-review` | JS/TS 审查 | 使用 JS/TS 则保留 |
+| `sessions.md` | `/sessions` | 会话管理 | 按需保留 |
+| `test-coverage.md` | `/test-coverage` | 覆盖率分析 | **保留** |
 
-### 5.2 命令配置基本不需修改
+### 5.2 工作模式切换
+
+使用 `/context` 命令快速切换工作模式：
+
+```bash
+/context dev       # 开发模式：先写代码，后解释；优先可工作方案
+/context review    # 审查模式：先读代码，再评论；按严重性排序问题
+/context research  # 研究模式：先理解，后行动；广泛阅读后再下结论
+```
+
+**使用场景：**
+
+| 场景 | 推荐模式 |
+|------|---------|
+| 快速迭代新功能 | `/context dev` |
+| 代码审查 PR | `/context review` |
+| 学习新技术 | `/context research` |
+| 调试复杂问题 | `/context research` |
+| 重构代码 | `/context review` |
+
+### 5.3 命令配置基本不需修改
 
 命令文件主要定义"何时使用"、"做什么"，通常不需要修改。
 
@@ -538,9 +577,12 @@ agents/
 
 | 技能目录 | 内容 | 是否保留 |
 |---------|------|---------|
+| `search-first/` | 先研究后编码工作流 | **保留** |
 | `javascript-patterns/` | JS 核心模式 | 使用 JS 则保留 |
 | `frontend-patterns/` | React/Vue 模式 | 前端项目保留 |
 | `node-backend-patterns/` | Node 后端模式 | Node 项目保留 |
+| `api-design/` | REST API 设计模式 | 后端项目保留 |
+| `e2e-testing/` | Playwright E2E 测试模式 | 需要 E2E 则保留 |
 | `golang-patterns/` | Go 模式 | 使用 Go 则保留 |
 | `golang-testing/` | Go 测试模式 | 使用 Go 则保留 |
 | `security-review/` | 安全审查流程 | **保留** |
@@ -749,13 +791,15 @@ npm test -- user.test.ts
 claude-code-config-zh/
 ├── CLAUDE.md
 ├── AGENTS.md
+├── contexts/              # 3个工作模式
 ├── rules/
 │   ├── common/           # 5个文件（已简化）
 │   ├── javascript/       # 5个文件
 │   └── typescript/       # 5个文件
 ├── agents/               # 4个代理
-├── commands/             # 5个命令
-├── skills/               # 5个技能
+├── commands/             # 6个命令
+├── skills/               # 6个技能
+├── scripts/lib/          # 工具函数
 └── tests/
 ```
 
@@ -887,6 +931,7 @@ feature/xxx (功能分支)
 claude-code-config-zh/
 ├── CLAUDE.md
 ├── AGENTS.md
+├── contexts/              # 3个工作模式
 ├── rules/
 │   ├── common/           # 9个文件（完整保留）
 │   ├── javascript/       # 5个文件
@@ -899,8 +944,9 @@ claude-code-config-zh/
 │   ├── build-error-resolver.md
 │   ├── doc-updater.md
 │   └── javascript-reviewer.md
-├── commands/             # 7个命令
-├── skills/               # 6个技能
+├── commands/             # 9个命令
+├── skills/               # 8个技能
+├── scripts/lib/          # 工具函数
 └── tests/
 ```
 
@@ -981,14 +1027,16 @@ claude-code-config-zh/
 claude-code-config-zh/
 ├── CLAUDE.md
 ├── AGENTS.md
+├── contexts/              # 3个工作模式（完整）
 ├── rules/
 │   ├── common/           # 9个文件（完整）
 │   ├── javascript/       # 5个文件
 │   ├── typescript/       # 5个文件
 │   └── golang/           # 5个文件（备用）
 ├── agents/               # 9个代理（完整）
-├── commands/             # 9个命令（完整）
-├── skills/               # 8个技能（完整）
+├── commands/             # 12个命令（完整）
+├── skills/               # 11个技能（完整）
+├── scripts/lib/          # 工具函数（完整）
 ├── hooks/                # 启用
 └── tests/
 ```
@@ -1006,6 +1054,8 @@ cp -r rules your-project/
 cp -r agents your-project/
 cp -r commands your-project/
 cp -r skills your-project/
+cp -r contexts your-project/
+cp -r scripts your-project/
 
 # 2. 删除不需要的文件
 cd your-project
@@ -1027,6 +1077,8 @@ cp -r rules your-project/
 cp -r agents your-project/
 cp -r commands your-project/
 cp -r skills your-project/
+cp -r contexts your-project/
+cp -r scripts your-project/
 
 # 2. 删除不需要的文件
 cd your-project
@@ -1107,5 +1159,5 @@ node tests/run-all.js
 
 ---
 
-**文档版本：** v1.0  
+**文档版本：** v2.2.0  
 **最后更新：** 2026-03-03
