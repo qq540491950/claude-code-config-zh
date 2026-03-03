@@ -383,7 +383,8 @@ import lodash from 'lodash'
 import { UserService } from './services/user-service'
 import { logger } from './utils/logger'
 ```
-```
+
+---
 
 ### 3.4 修改示例：TypeScript/Vue 规则
 
@@ -445,7 +446,6 @@ function increment() {
 | 组件目录 | kebab-case | `user-profile/` |
 | Props | camelCase | `userName` |
 | Events | kebab-case | `@update-user` |
-```
 
 ---
 
@@ -593,12 +593,18 @@ agents/
 
 **创建新技能文件 `skills/my-project-patterns/SKILL.md`：**
 
-```markdown
+**文件头部：**
+
+```yaml
 ---
 name: my-project-patterns
 description: 项目特定的开发模式和规范
 ---
+```
 
+**内容示例：**
+
+```markdown
 # 项目开发模式
 
 ## 何时激活
@@ -609,29 +615,25 @@ description: 项目特定的开发模式和规范
 
 ## 项目架构
 
-### 目录结构
+目录结构建议：
 
-```
-src/
-├── api/           # API 调用
-├── components/    # 组件
-├── hooks/         # 自定义 Hooks
-├── utils/         # 工具函数
-├── types/         # 类型定义
-└── constants/     # 常量
-```
+- src/api/           # API 调用
+- src/components/    # 组件
+- src/hooks/         # 自定义 Hooks
+- src/utils/         # 工具函数
+- src/types/         # 类型定义
+- src/constants/     # 常量
 
-### 命名约定
+## 命名约定
 
 | 类型 | 约定 | 示例 |
 |------|------|------|
-| API 函数 | fetch + 动词 + 名词 | `fetchUserList` |
-| Hook | use + 功能 | `useUserList` |
-| 组件 | 功能 + 类型 | `UserListCard` |
+| API 函数 | fetch + 动词 + 名词 | fetchUserList |
+| Hook | use + 功能 | useUserList |
+| 组件 | 功能 + 类型 | UserListCard |
+```
 
-## 常用模式
-
-### API 调用模式
+**API 调用模式示例：**
 
 ```typescript
 // api/user.ts
@@ -642,7 +644,7 @@ export async function fetchUserList(params: UserListParams) {
 }
 ```
 
-### Hook 模式
+**Hook 模式示例：**
 
 ```typescript
 // hooks/useUserList.ts
@@ -655,7 +657,6 @@ export function useUserList(params: Ref<UserListParams>) {
     queryFn: () => fetchUserList(params.value)
   })
 }
-```
 ```
 
 ---
@@ -1059,7 +1060,15 @@ cp -r scripts your-project/
 
 # 2. 删除不需要的文件
 cd your-project
-rm -rf rules/golang                          # 不用 Go
+
+# Windows 命令
+rmdir /s /q rules\golang
+del agents\doc-updater.md agents\e2e-runner.md agents\tdd-guide.md
+del commands\update-docs.md commands\e2e.md commands\tdd.md
+rmdir /s /q skills\tdd-workflow skills\design-collaboration
+
+# macOS/Linux 命令
+rm -rf rules/golang
 rm agents/doc-updater.md agents/e2e-runner.md agents/tdd-guide.md
 rm commands/update-docs.md commands/e2e.md commands/tdd.md
 rm -rf skills/tdd-workflow skills/design-collaboration
@@ -1082,8 +1091,15 @@ cp -r scripts your-project/
 
 # 2. 删除不需要的文件
 cd your-project
-rm -rf rules/golang                          # 不用 Go
-rm agents/e2e-runner.md                      # 暂不需要 E2E
+
+# Windows 命令
+rmdir /s /q rules\golang
+del agents\e2e-runner.md
+del commands\e2e.md
+
+# macOS/Linux 命令
+rm -rf rules/golang
+rm agents/e2e-runner.md
 rm commands/e2e.md
 
 # 3. 修改配置文件
