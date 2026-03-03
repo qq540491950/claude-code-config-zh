@@ -37,9 +37,9 @@ claude-code-config-zh/
 │   ├── typescript/        # TypeScript/Vue 规则（5个文件）
 │   └── golang/            # Go 规则（5个文件）
 │
-├── agents/                # 代理配置（9个）
-├── commands/              # 斜杠命令（12个）
-├── skills/                # 技能模块（11个）
+├── agents/                # 代理配置（12个）
+├── commands/              # 斜杠命令（18个）
+├── skills/                # 技能模块（13个）
 ├── hooks/                 # 可选钩子
 │
 ├── scripts/               # 工具脚本
@@ -67,7 +67,7 @@ claude-code-config-zh/
 
 ### 1.3 配置文件格式
 
-所有配置文件使用 **Markdown + YAML Frontmatter** 格式：
+本仓库主要配置文件（如 `agents/`、`skills/`、部分 `commands/`）使用 **Markdown + YAML Frontmatter** 格式：
 
 ```markdown
 ---
@@ -456,14 +456,17 @@ function increment() {
 | 代理文件 | 用途 | 是否保留 |
 |---------|------|---------|
 | `planner.md` | 实现规划 | **保留** |
+| `architect.md` | 系统架构设计 | 复杂架构时保留 |
 | `tdd-guide.md` | TDD 开发指导 | 按需保留 |
 | `code-reviewer.md` | 通用代码审查 | **保留** |
 | `security-reviewer.md` | 安全审查 | **保留** |
 | `build-error-resolver.md` | 构建错误修复 | **保留** |
+| `go-build-resolver.md` | Go 构建错误修复 | 使用 Go 则保留 |
 | `doc-updater.md` | 文档同步 | 按需保留 |
 | `e2e-runner.md` | E2E 测试 | 按需保留 |
 | `go-reviewer.md` | Go 代码审查 | 使用 Go 则保留 |
 | `javascript-reviewer.md` | JS/TS 代码审查 | 使用 JS/TS 则保留 |
+| `refactor-cleaner.md` | 死代码清理 | 重构时保留 |
 
 ### 4.2 删除不需要的代理
 
@@ -527,9 +530,15 @@ agents/
 | `e2e.md` | `/e2e` | E2E 测试 | 按需保留 |
 | `verify.md` | `/verify` | 验证检查 | **保留** |
 | `go-review.md` | `/go-review` | Go 审查 | 使用 Go 则保留 |
+| `go-test.md` | `/go-test` | Go TDD 工作流 | 使用 Go 则保留 |
+| `go-build.md` | `/go-build` | Go 构建修复 | 使用 Go 则保留 |
 | `javascript-review.md` | `/javascript-review` | JS/TS 审查 | 使用 JS/TS 则保留 |
 | `sessions.md` | `/sessions` | 会话管理 | 按需保留 |
 | `test-coverage.md` | `/test-coverage` | 覆盖率分析 | **保留** |
+| `learn.md` | `/learn` | 会话模式提取 | 按需保留 |
+| `checkpoint.md` | `/checkpoint` | 检查点管理 | 按需保留 |
+| `skill-create.md` | `/skill-create` | 从 git 历史生成技能 | 按需保留 |
+| `refactor-clean.md` | `/refactor-clean` | 死代码清理 | 按需保留 |
 
 ### 5.2 工作模式切换
 
@@ -588,6 +597,8 @@ agents/
 | `security-review/` | 安全审查流程 | **保留** |
 | `tdd-workflow/` | TDD 工作流 | 按需保留 |
 | `design-collaboration/` | 设计协作 | 按需保留 |
+| `continuous-learning/` | 持续学习系统 | 按需保留 |
+| `verification-loop/` | 验证循环 | **保留** |
 
 ### 6.2 添加项目特定技能
 
@@ -1175,5 +1186,5 @@ node tests/run-all.js
 
 ---
 
-**文档版本：** v2.2.0  
-**最后更新：** 2026-03-03
+**文档版本：** v2.3.0  
+**最后更新：** 2026-03-04

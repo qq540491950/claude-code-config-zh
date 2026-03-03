@@ -6,6 +6,7 @@ const path = require('path')
 const tests = [
   'tests/config-smoke.test.js',
   'tests/hooks-json.test.js',
+  'tests/metadata-integrity.test.js',
 ]
 
 for (const test of tests) {
