@@ -4,7 +4,7 @@
 
 ## 项目概述
 
-这是一个 **Claude Code 配置插件** - 包含生产级代理、技能、命令和规则。为 Golang、JavaScript、TypeScript/Vue 开发提供最佳实践工作流。
+这是一个 **Claude Code 配置插件** - 包含生产级代理、技能、命令和规则。为 Golang、Vue、JavaScript、Node.js 开发提供最佳实践工作流。
 
 ## 架构说明
 
@@ -14,8 +14,8 @@
 claude-code-config-zh/
 ├── CLAUDE.md              # 主入口配置
 ├── AGENTS.md              # 代理协调指南
-├── agents/                # 专业代理定义（9个）
-├── commands/              # 斜杠命令（11个）
+├── agents/                # 专业代理定义（12个）
+├── commands/              # 斜杠命令（18个）
 ├── contexts/              # 动态上下文注入（3个模式）
 │   ├── dev.md             # 开发模式上下文
 │   ├── review.md          # 审查模式上下文
@@ -25,7 +25,12 @@ claude-code-config-zh/
 │   ├── javascript/        # JavaScript 规则（5个文件）
 │   ├── typescript/        # TypeScript/Vue 规则（5个文件）
 │   └── golang/            # Go 规则（5个文件）
-├── skills/                # 工作流定义和领域知识（11个）
+├── skills/                # 工作流定义和领域知识（13个）
+├── mcp-configs/           # MCP 服务配置模板
+│   └── mcp-servers.json   # 推荐的 MCP 服务配置
+├── examples/              # 项目模板示例
+│   ├── go-microservice-CLAUDE.md
+│   └── vue-node-CLAUDE.md
 ├── scripts/               # 工具脚本
 │   ├── lib/               # 工具函数库
 │   └── validate-config.js # 配置验证
@@ -40,7 +45,7 @@ claude-code-config-zh/
 |------|---------|--------|------|
 | **JavaScript** | 5个（含 hooks） | javascript-patterns, node-backend-patterns | javascript-reviewer |
 | **TypeScript/Vue** | 5个（含 hooks） | frontend-patterns | javascript-reviewer |
-| **Golang** | 5个（含 hooks） | golang-patterns, golang-testing | go-reviewer |
+| **Golang** | 5个（含 hooks） | golang-patterns, golang-testing | go-reviewer, go-build-resolver |
 
 ## 核心命令
 
@@ -51,13 +56,17 @@ claude-code-config-zh/
 | `/plan` | 实现规划 |
 | `/tdd` | 测试驱动开发工作流 |
 | `/code-review` | 代码质量审查 |
+| `/learn` | 从会话提取可复用模式 |
+| `/skill-create` | 从 git 历史生成技能 |
 
-### 语言特定审查
+### 语言特定
 
 | 命令 | 用途 |
 |------|------|
 | `/javascript-review` | JavaScript/TypeScript/Vue 代码审查 |
 | `/go-review` | Go 代码审查 |
+| `/go-test` | Go TDD 工作流（表驱动测试） |
+| `/go-build` | Go 构建错误修复 |
 
 ### 测试与质量
 
@@ -66,6 +75,7 @@ claude-code-config-zh/
 | `/test-coverage` | 分析测试覆盖率，生成缺失测试 |
 | `/e2e` | 执行关键流程端到端测试 |
 | `/verify` | 综合验证检查 |
+| `/checkpoint` | 检查点创建/验证 |
 
 ### 其他命令
 
@@ -75,6 +85,7 @@ claude-code-config-zh/
 | `/build-fix` | 修复构建错误 |
 | `/update-docs` | 同步更新文档 |
 | `/sessions` | 会话历史管理（列表、加载、别名）|
+| `/refactor-clean` | 安全移除死代码 |
 
 ## 开发规范
 
@@ -147,13 +158,30 @@ claude-code-config-zh/
 | `tdd-workflow` | TDD 工作流指导 |
 | `e2e-testing` | Playwright E2E 测试模式 |
 | `api-design` | REST API 设计模式 |
+| `continuous-learning` | 持续学习系统，自动提取模式 |
 
 ### 质量保证
 
 | 技能 | 用途 |
 |------|------|
 | `security-review` | 安全审查流程和检查清单 |
+| `verification-loop` | 验证循环，全面质量检查 |
 | `design-collaboration` | 设计协作流程 |
+
+## MCP 服务配置
+
+在 `mcp-configs/mcp-servers.json` 中提供了推荐的 MCP 服务配置：
+
+| 服务 | 用途 | 必装 |
+|------|------|------|
+| `github` | GitHub 操作（PR、Issue、仓库） | ⭐⭐⭐ |
+| `memory` | 跨会话持久记忆 | ⭐⭐⭐ |
+| `filesystem` | 文件系统操作 | ⭐⭐⭐ |
+| `context7` | 实时文档查询 | ⭐⭐⭐ |
+| `sequential-thinking` | 链式推理 | ⭐⭐ |
+| `firecrawl` | 网页抓取 | ⭐⭐ |
+
+**使用方法**：复制需要的服务到 `~/.claude.json` 的 `mcpServers` 部分，替换 `YOUR_*_HERE` 为实际密钥。
 
 ## 贡献指南
 

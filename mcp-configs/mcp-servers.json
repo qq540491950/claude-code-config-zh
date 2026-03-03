@@ -1,0 +1,72 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_PAT_HERE"
+      },
+      "description": "GitHub 操作 - PRs、Issues、仓库管理"
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "description": "跨会话持久记忆存储"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "D:/projects"],
+      "description": "文件系统操作 (请修改为你的项目路径)"
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@context7/mcp-server"],
+      "description": "实时文档查询 - Vue、Go、Node 等框架的最新文档"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "description": "链式推理 - 复杂问题的逐步分析"
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "env": {
+        "FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_KEY_HERE"
+      },
+      "description": "网页抓取和爬取"
+    },
+    "exa-web-search": {
+      "command": "npx",
+      "args": ["-y", "exa-mcp-server"],
+      "env": {
+        "EXA_API_KEY": "YOUR_EXA_API_KEY_HERE"
+      },
+      "description": "网页搜索和研究"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com",
+      "description": "Vercel 部署和项目管理"
+    },
+    "docker": {
+      "command": "npx",
+      "args": ["-y", "@docker/mcp-server-docker"],
+      "description": "Docker 容器管理"
+    }
+  },
+  "_comments": {
+    "usage": "将需要的服务复制到你的 ~/.claude.json 的 mcpServers 部分",
+    "env_vars": "将 YOUR_*_HERE 占位符替换为实际的 API 密钥",
+    "disabling": "使用项目配置中的 disabledMcpServers 数组来按项目禁用",
+    "context_warning": "建议启用不超过 10 个 MCP 服务以保持上下文窗口",
+    "required": "必装服务: github, memory, filesystem, context7",
+    "recommended": "推荐服务: sequential-thinking, exa-web-search"
+  },
+  "_installation": {
+    "step1": "复制此文件中需要的服务配置",
+    "step2": "粘贴到 ~/.claude.json 的 mcpServers 对象中",
+    "step3": "替换 YOUR_*_HERE 为实际密钥",
+    "step4": "重启 Claude Code CLI"
+  }
+}

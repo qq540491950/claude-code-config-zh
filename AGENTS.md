@@ -30,14 +30,17 @@
 | 代理 | 用途 | 使用场景 |
 |-------|---------|-------------|
 | planner | 实现规划 | 复杂功能、重构 |
+| architect | 系统架构设计 | 架构决策、技术选型 |
 | tdd-guide | 测试驱动开发 | 新功能、Bug修复 |
 | code-reviewer | 代码质量和可维护性 | 编写/修改代码后 |
 | security-reviewer | 漏洞检测 | 提交前、敏感代码 |
 | build-error-resolver | 修复构建/类型错误 | 构建失败时 |
+| go-build-resolver | 修复 Go 构建错误 | Go 项目构建失败 |
 | doc-updater | 文档同步与对齐 | 命令/规则/流程变更后 |
 | e2e-runner | 端到端测试执行 | 发布前关键流程验证 |
 | go-reviewer | Go代码审查 | Go项目 |
 | javascript-reviewer | JavaScript/TypeScript/Vue代码审查 | JS/TS/Vue项目 |
+| refactor-cleaner | 死代码清理 | 代码清理、重构 |
 
 ## 代理协调
 
@@ -70,6 +73,12 @@
 - 错误处理模式
 - 并发安全
 - 性能优化
+
+**go-build-resolver** 专注于：
+- Go 构建错误诊断和修复
+- go vet 警告处理
+- 模块依赖问题
+- 类型错误修复
 
 ## 安全指南
 

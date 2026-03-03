@@ -1,6 +1,6 @@
 # Claude Code 精简配置 - 中文版
 
-> 适用于 Golang、JavaScript、TypeScript/Vue 开发者的开箱即用配置
+> 适用于 Golang、Vue、JavaScript、Node.js 开发者的开箱即用配置
 
 ## 目录结构
 
@@ -21,7 +21,7 @@ claude-code-config-zh/
 │   ├── javascript/              # JavaScript 规范（5个文件）
 │   └── typescript/              # TypeScript/Vue 规范（5个文件）
 │
-├── agents/                      # 代理配置（9个）
+├── agents/                      # 代理配置（12个）
 │   ├── planner.md               # 规划代理
 │   ├── tdd-guide.md             # TDD 指导代理
 │   ├── code-reviewer.md         # 代码审查代理
@@ -30,9 +30,12 @@ claude-code-config-zh/
 │   ├── doc-updater.md           # 文档同步代理
 │   ├── e2e-runner.md            # E2E 测试代理
 │   ├── go-reviewer.md           # Go 代码审查代理
-│   └── javascript-reviewer.md   # JS/TS/Vue 代码审查代理
+│   ├── go-build-resolver.md     # Go 构建错误修复代理
+│   ├── javascript-reviewer.md   # JS/TS/Vue 代码审查代理
+│   ├── architect.md             # 架构设计代理
+│   └── refactor-cleaner.md      # 代码清理代理
 │
-├── commands/                    # 斜杠命令（12个）
+├── commands/                    # 斜杠命令（18个）
 │   ├── plan.md                  # /plan 实现规划
 │   ├── tdd.md                   # /tdd 测试驱动开发
 │   ├── code-review.md           # /code-review 代码审查
@@ -40,13 +43,19 @@ claude-code-config-zh/
 │   ├── update-docs.md           # /update-docs 文档同步
 │   ├── e2e.md                   # /e2e 端到端测试
 │   ├── go-review.md             # /go-review Go 审查
+│   ├── go-test.md               # /go-test Go TDD 工作流
+│   ├── go-build.md              # /go-build Go 构建修复
 │   ├── javascript-review.md     # /javascript-review JS/TS 审查
 │   ├── verify.md                # /verify 验证命令
 │   ├── sessions.md              # /sessions 会话管理
 │   ├── test-coverage.md         # /test-coverage 覆盖率分析
-│   └── context.md               # /context 工作模式切换
+│   ├── context.md               # /context 工作模式切换
+│   ├── learn.md                 # /learn 提取可复用模式
+│   ├── checkpoint.md            # /checkpoint 检查点管理
+│   ├── skill-create.md          # /skill-create 从 git 历史生成技能
+│   └── refactor-clean.md        # /refactor-clean 死代码清理
 │
-├── skills/                      # 技能模块（11个）
+├── skills/                      # 技能模块（13个）
 │   ├── golang-patterns/         # Go 开发模式
 │   ├── golang-testing/          # Go 测试模式
 │   ├── javascript-patterns/     # JavaScript 核心模式
@@ -57,7 +66,16 @@ claude-code-config-zh/
 │   ├── api-design/              # REST API 设计模式
 │   ├── security-review/         # 安全审查流程
 │   ├── design-collaboration/    # 设计协作模式
-│   └── tdd-workflow/            # TDD 工作流
+│   ├── tdd-workflow/            # TDD 工作流
+│   ├── continuous-learning/     # 持续学习系统
+│   └── verification-loop/       # 验证循环
+│
+├── mcp-configs/                 # MCP 服务配置
+│   └── mcp-servers.json         # MCP 服务器配置模板
+│
+├── examples/                    # 项目模板示例
+│   ├── go-microservice-CLAUDE.md # Go 微服务模板
+│   └── vue-node-CLAUDE.md       # Vue + Node 应用模板
 │
 ├── scripts/                     # 工具脚本
 │   ├── lib/                     # 工具函数库
@@ -152,10 +170,16 @@ cp -r claude-code-config-zh/{rules,agents,commands,skills,contexts} ~/.claude/
 | `/update-docs` | 文档同步 | 代码变更后同步 README/说明文档 |
 | `/e2e` | 端到端测试 | 验证关键用户流程 |
 | `/go-review` | Go 代码审查 | Go 项目专用 |
+| `/go-test` | Go TDD 工作流 | Go 项目表驱动测试 |
+| `/go-build` | Go 构建修复 | Go 构建错误修复 |
 | `/javascript-review` | JS/TS/Vue 代码审查 | 前端项目专用 |
 | `/verify` | 验证检查 | 提交前验证构建、测试 |
 | `/sessions` | 会话管理 | 管理、加载、别名会话历史 |
 | `/test-coverage` | 覆盖率分析 | 分析测试覆盖率并生成缺失测试 |
+| `/learn` | 模式提取 | 从会话中提取可复用模式 |
+| `/checkpoint` | 检查点管理 | 创建/验证/列出检查点 |
+| `/skill-create` | 技能生成 | 从 git 历史生成 SKILL.md |
+| `/refactor-clean` | 代码清理 | 安全移除死代码 |
 
 ### 工作流程
 
@@ -319,6 +343,7 @@ npx playwright test            # E2E 测试
 - **v2.0.0** - 移除 Python 支持，Vue 合并到 TypeScript，新增 `javascript-reviewer` 代理，扩展 JS/TS 规则和 Skills
 - **v2.1.0** - 新增 `contexts/` 工作模式切换、`scripts/lib/` 工具函数库、新增 `search-first`/`e2e-testing`/`api-design` 技能、新增 `/sessions`/`/test-coverage` 命令
 - **v2.2.0** - 新增 `/context` 命令用于快速切换工作模式
+- **v2.3.0** - 新增 MCP 服务配置、3个代理（architect、refactor-cleaner、go-build-resolver）、6个命令（go-test、go-build、learn、checkpoint、skill-create、refactor-clean）、2个技能（continuous-learning、verification-loop）、项目模板示例（Go 微服务、Vue+Node）
 
 ---
 
