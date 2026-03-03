@@ -10,6 +10,21 @@
 4. **不可变性** — 始终创建新对象，永不修改现有对象
 5. **先计划后执行** — 复杂功能先规划再编码
 
+## 工作模式（Contexts）
+
+根据当前任务切换适当的工作模式：
+
+| 模式 | 文件 | 适用场景 |
+|------|------|---------|
+| **开发模式** | `contexts/dev.md` | 活跃开发、编码、构建功能 |
+| **审查模式** | `contexts/review.md` | PR 审查、代码分析、质量检查 |
+| **研究模式** | `contexts/research.md` | 探索、调查、学习新技术 |
+
+模式切换会自动调整：
+- 行为准则（先编码 vs 先理解）
+- 常用工具（Edit vs Read）
+- 输出格式（代码 vs 发现报告）
+
 ## 可用代理
 
 | 代理 | 用途 | 使用场景 |
@@ -22,13 +37,13 @@
 | doc-updater | 文档同步与对齐 | 命令/规则/流程变更后 |
 | e2e-runner | 端到端测试执行 | 发布前关键流程验证 |
 | go-reviewer | Go代码审查 | Go项目 |
-| python-reviewer | Python代码审查 | Python项目 |
+| javascript-reviewer | JavaScript/TypeScript/Vue代码审查 | JS/TS/Vue项目 |
 
 ## 代理协调
 
 主动使用代理，无需用户提示：
 - 复杂功能请求 → **planner**
-- 代码刚写/修改 → **code-reviewer**
+- 代码刚写/修改 → **code-reviewer** 或语言专用 reviewer
 - Bug修复或新功能 → **tdd-guide**
 - 构建或类型检查失败 → **build-error-resolver**
 - 接口/命令/规则调整后 → **doc-updater**
@@ -36,6 +51,25 @@
 - 安全敏感代码 → **security-reviewer**
 
 独立操作可并行执行——同时启动多个代理。
+
+## 语言特定代理
+
+### JavaScript/TypeScript/Vue
+
+**javascript-reviewer** 专注于：
+- ES6+ 惯用法和现代语法
+- 异步模式（Promise、async/await）
+- TypeScript 类型安全
+- 闭包陷阱和 this 绑定
+- XSS、原型污染等安全问题
+
+### Golang
+
+**go-reviewer** 专注于：
+- Go 惯用法和风格
+- 错误处理模式
+- 并发安全
+- 性能优化
 
 ## 安全指南
 
@@ -89,7 +123,7 @@
 
 1. **计划** — 使用 planner 代理，识别依赖和风险，分解为阶段
 2. **TDD** — 使用 tdd-guide 代理，先写测试，实现，重构
-3. **审查** — 立即使用 code-reviewer 代理，解决关键/高优先级问题
+3. **审查** — 立即使用 code-reviewer 或语言专用 reviewer，解决关键/高优先级问题
 4. **提交** — 常规提交格式，全面的PR摘要
 
 ## Git工作流
