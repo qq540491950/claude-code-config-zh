@@ -4,7 +4,7 @@
 
 ## 项目概述
 
-这是一个 **Claude Code 配置插件** - 包含生产级代理、技能、命令和规则。为 Golang、Python、Vue 开发提供最佳实践工作流。
+这是一个 **Claude Code 配置插件** - 包含生产级代理、技能、命令和规则。为 Golang、Python、TypeScript、Vue 开发提供最佳实践工作流。
 
 ## 架构说明
 
@@ -14,6 +14,7 @@
 - **skills/** - 工作流定义和领域知识
 - **commands/** - 斜杠命令（/tdd, /plan, /code-review 等）
 - **rules/** - 编码规范（安全、编码风格、测试要求）
+- **hooks/** - 可选轻量自动化（PreToolUse、Stop）
 
 ## 核心命令
 
@@ -21,8 +22,11 @@
 - `/tdd` - 测试驱动开发工作流
 - `/code-review` - 代码质量审查
 - `/build-fix` - 修复构建错误
+- `/update-docs` - 同步更新文档
+- `/e2e` - 执行关键流程端到端测试
 - `/go-review` - Go 代码审查
 - `/python-review` - Python 代码审查
+- `/verify` - 综合验证检查
 
 ## 开发规范
 

@@ -19,6 +19,8 @@
 | code-reviewer | 代码质量和可维护性 | 编写/修改代码后 |
 | security-reviewer | 漏洞检测 | 提交前、敏感代码 |
 | build-error-resolver | 修复构建/类型错误 | 构建失败时 |
+| doc-updater | 文档同步与对齐 | 命令/规则/流程变更后 |
+| e2e-runner | 端到端测试执行 | 发布前关键流程验证 |
 | go-reviewer | Go代码审查 | Go项目 |
 | python-reviewer | Python代码审查 | Python项目 |
 
@@ -28,6 +30,9 @@
 - 复杂功能请求 → **planner**
 - 代码刚写/修改 → **code-reviewer**
 - Bug修复或新功能 → **tdd-guide**
+- 构建或类型检查失败 → **build-error-resolver**
+- 接口/命令/规则调整后 → **doc-updater**
+- 发布前关键路径验证 → **e2e-runner**
 - 安全敏感代码 → **security-reviewer**
 
 独立操作可并行执行——同时启动多个代理。

@@ -1,6 +1,6 @@
 # Claude Code 精简配置 - 中文版
 
-> 适用于 Golang、Python、Vue 开发者的开箱即用配置
+> 适用于 Golang、Python、TypeScript、Vue、JavaScript/Node 开发者的开箱即用配置
 
 ## 📁 目录结构
 
@@ -14,13 +14,17 @@ claude-code-config-zh/
 │   ├── common/                  # 通用规范
 │   ├── golang/                  # Go 语言规范
 │   ├── python/                  # Python 语言规范
-│   └── vue/                     # Vue/TypeScript 规范
+│   ├── vue/                     # Vue/TypeScript 规范
+│   └── typescript/              # TypeScript 通用规范（非 Vue 场景）
 │
 ├── agents/                      # 代理配置
 │   ├── planner.md               # 规划代理
 │   ├── tdd-guide.md             # TDD 指导代理
 │   ├── code-reviewer.md         # 代码审查代理
 │   ├── security-reviewer.md     # 安全审查代理
+│   ├── build-error-resolver.md  # 构建错误修复代理
+│   ├── doc-updater.md           # 文档同步代理
+│   ├── e2e-runner.md            # E2E 测试代理
 │   ├── go-reviewer.md           # Go 代码审查代理
 │   └── python-reviewer.md       # Python 代码审查代理
 │
@@ -28,15 +32,32 @@ claude-code-config-zh/
 │   ├── plan.md                  # /plan 实现规划
 │   ├── tdd.md                   # /tdd 测试驱动开发
 │   ├── code-review.md           # /code-review 代码审查
+│   ├── build-fix.md             # /build-fix 构建错误修复
+│   ├── update-docs.md           # /update-docs 文档同步
+│   ├── e2e.md                   # /e2e 端到端测试
 │   ├── go-review.md             # /go-review Go 审查
 │   ├── python-review.md         # /python-review Python 审查
 │   └── verify.md                # /verify 验证命令
 │
-└── skills/                      # 技能模块
-    ├── golang-patterns/         # Go 开发模式
-    ├── python-patterns/         # Python 开发模式
-    ├── frontend-patterns/       # 前端开发模式
-    └── tdd-workflow/            # TDD 工作流
+├── skills/                      # 技能模块
+│   ├── golang-patterns/         # Go 开发模式
+│   ├── python-patterns/         # Python 开发模式
+│   ├── frontend-patterns/       # 前端开发模式
+│   ├── node-backend-patterns/   # Node 后端模式
+│   ├── design-collaboration/    # 设计协作模式
+│   └── tdd-workflow/            # TDD 工作流
+│
+├── hooks/                       # 轻量自动化（可选启用）
+│   ├── hooks.json               # 轻量 hooks（风险命令阻断 + 提醒）
+│   └── README.md                # 启用说明
+│
+├── scripts/                     # 配置自检脚本
+│   └── validate-config.js
+│
+└── tests/                       # 基础可用性自测
+    ├── run-all.js
+    ├── config-smoke.test.js
+    └── hooks-json.test.js
 ```
 
 ## 🚀 快速开始
@@ -120,6 +141,9 @@ cp rules/* .cursor/rules/
 | `/plan` | 实现规划 | 开始新功能前规划步骤 |
 | `/tdd` | 测试驱动开发 | 先写测试再实现 |
 | `/code-review` | 代码审查 | 完成代码后检查质量 |
+| `/build-fix` | 构建错误修复 | 构建或类型检查失败时快速定位修复 |
+| `/update-docs` | 文档同步 | 代码变更后同步 README/说明文档 |
+| `/e2e` | 端到端测试 | 验证关键用户流程 |
 | `/go-review` | Go 代码审查 | Go 项目专用 |
 | `/python-review` | Python 代码审查 | Python 项目专用 |
 | `/verify` | 验证检查 | 提交前验证构建、测试 |
@@ -130,9 +154,12 @@ cp rules/* .cursor/rules/
 1. 需求分析 → /plan 创建实现计划
 2. 测试先行 → /tdd 指导 TDD 开发
 3. 编码实现 → 按规则编写代码
-4. 代码审查 → /code-review 检查质量
-5. 安全检查 → 确保无安全问题
-6. 验证通过 → /verify 确认可提交
+4. 构建异常 → /build-fix 修复构建与类型错误
+5. 代码审查 → /code-review 检查质量
+6. 文档同步 → /update-docs 对齐说明
+7. 流程回归 → /e2e 覆盖关键路径
+8. 安全检查 → 确保无安全问题
+9. 验证通过 → /verify 确认可提交
 ```
 
 ### 根据项目类型选择配置
@@ -151,6 +178,27 @@ cp rules/* .cursor/rules/
 - 使用 `rules/vue/` 下的所有规范
 - 组件使用 Composition API
 - 测试使用 Vitest + Playwright
+
+#### TypeScript（非 Vue）项目
+- 使用 `rules/typescript/` 下的所有规范
+- 优先保持严格类型与不可变更新
+- 测试使用 Vitest/Jest，E2E 使用 Playwright
+
+#### JavaScript/Node 项目
+- 使用 `rules/javascript/` 下的所有规范
+- 后端开发参考 `skills/node-backend-patterns/`
+- 提交前建议执行 `/verify` 与 `/e2e`
+
+### 轻量 Hooks（可选）
+
+- 本仓库提供 `hooks/hooks.json`（Bash 风险命令阻断 + 写入敏感信息提醒 + Stop 提醒）
+- 默认不强制启用，保持精简；按需参考 `hooks/README.md` 手动开启
+
+### 团队使用模式（兼顾个人）
+
+- **个人模式（默认）**：保留轻量流程（`/plan → /tdd → /build-fix → /verify`）
+- **团队模式（推荐）**：在个人模式基础上增加 `/code-review → /update-docs → /e2e`
+- 原则：先保证个人效率，再按项目风险逐步加严团队门禁
 
 ## 🔧 自定义扩展
 
@@ -215,6 +263,13 @@ description: 命令描述
 - [ ] 文档已更新
 - [ ] 边缘情况已处理
 
+### 文档验收标准（团队）
+
+- [ ] 命令变更已同步 README 的“核心命令”与“工作流程”
+- [ ] 代理/规则/技能变更已同步目录结构说明
+- [ ] 关键路径变更已补充最小示例或操作步骤
+- [ ] 文档中引用的路径均存在且可访问
+
 ## 📋 常用工具命令
 
 ### Golang
@@ -255,6 +310,8 @@ npx playwright test            # E2E 测试
 
 - **v1.0.0** - 初始版本，支持 Golang、Python、Vue 开发
 - **v1.1.0** - 添加 commands 和 skills 模块，支持其他 CLI 工具迁移说明
+- **v1.2.0** - 补齐 `/build-fix` 与 `build-error-resolver`，新增 `rules/typescript/` 与可选轻量 hooks
+- **v1.3.0** - 新增 `/update-docs`、`/e2e`、`doc-updater`、`e2e-runner`、`rules/javascript/`、Node/设计技能与基础自测
 
 ---
 
