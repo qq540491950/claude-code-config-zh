@@ -19,8 +19,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Validate config structure
+      - name: Validate Claude config structure
+        working-directory: claude
         run: node scripts/validate-config.js
 
-      - name: Run smoke and integrity tests
+      - name: Run Claude smoke and integrity tests
+        working-directory: claude
         run: node tests/run-all.js
