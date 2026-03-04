@@ -4,6 +4,8 @@
 
 本目录为 **Claude Code** 的完整配置集合（代理、命令、规则、技能、上下文、钩子与校验脚本）。
 
+> 配置入口已精简为：仅 `CLAUDE.md` 作为 Claude Code 主配置文件。
+
 ## 配置标识（Namespace）
 
 为避免与 Claude Code 自带配置或其他团队配置混淆，本配置集使用唯一标识 `UCC`。
@@ -17,7 +19,6 @@
 ```
 claude/
 ├── CLAUDE.md                    # 主配置文件（放在项目根目录）
-├── AGENTS.md                    # 代理配置说明（文档）
 ├── README.md                    # 本使用指南
 │
 ├── contexts/                    # 工作模式上下文（3个）
@@ -69,17 +70,27 @@ cp claude/CLAUDE.md ~/.claude/
 cp -r claude/{rules,agents,commands,skills,contexts} ~/.claude/
 ```
 
+### 方式三：使用复制脚本（推荐）
+
+```bash
+# 在本仓库根目录执行
+node claude/scripts/copy-config.js <目标目录>
+
+# 不传目标目录时会提示输入「项目目录或根目录」
+node claude/scripts/copy-config.js
+```
+
 ## 配置验证（建议改动后执行）
 
 ```bash
 # 在本仓库根目录执行
-node scripts/validate-config.js
-node tests/run-all.js
+node claude/scripts/validate-config.js
+node claude/tests/run-all.js
 ```
 
 ## 使用风险提示
 
-- `docs/CUSTOMIZATION_GUIDE.md` 中包含 `rmdir /s /q`、`rm -rf` 等删除命令示例：执行前务必确认当前目录与目标路径。
+- `docs/配置定制指南.md` 中包含 `rmdir /s /q`、`rm -rf` 等删除命令示例：执行前务必确认当前目录与目标路径。
 - `mcp-configs/mcp-servers.json` 为模板，含 `YOUR_*_HERE` 占位符与路径占位符：请替换为你自己的环境变量与目录。
 
 ## 版本日志

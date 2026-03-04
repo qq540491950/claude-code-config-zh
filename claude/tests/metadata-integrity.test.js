@@ -6,19 +6,10 @@ const root = path.resolve(__dirname, '..')
 
 const expectedCounts = {
   agents: 12,
-  commands: 18,
+  commands: 21,
   contexts: 3,
   skills: 13,
 }
-
-const commandsWithoutFrontmatter = new Set([
-  'ucc-checkpoint.md',
-  'ucc-context.md',
-  'ucc-learn.md',
-  'ucc-refactor-clean.md',
-  'ucc-sessions.md',
-  'ucc-test-coverage.md',
-])
 
 function read(file) {
   return fs.readFileSync(path.join(root, file), 'utf8')
@@ -70,25 +61,14 @@ fs.readdirSync(path.join(root, 'skills'), { withFileTypes: true })
     assertFrontmatterKeys(path.posix.join('skills', entry.name, 'SKILL.md'), ['name', 'description'])
   })
 
-const commandsMissingFrontmatter = []
 listFiles('commands').forEach((file) => {
   const rel = path.posix.join('commands', file)
   const content = read(rel)
-
-  if (hasFrontmatter(content)) {
-    assertFrontmatterKeys(rel, ['description'])
-  } else {
-    commandsMissingFrontmatter.push(file)
-  }
+  assert.ok(hasFrontmatter(content), `${rel} 缺少 Frontmatter`)
+  assertFrontmatterKeys(rel, ['description'])
 })
 
-assert.deepStrictEqual(
-  commandsMissingFrontmatter.sort(),
-  [...commandsWithoutFrontmatter].sort(),
-  `commands 缺少 frontmatter 的文件集合发生变化: ${commandsMissingFrontmatter.join(', ')}`,
-)
-
-const guide = read('docs/CUSTOMIZATION_GUIDE.md')
+const guide = read('docs/配置定制指南.md')
 const readme = read('README.md')
 
 const agentsMatch = guide.match(/agents\/\s+#\s*代理配置（(\d+)个）/)

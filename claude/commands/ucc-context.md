@@ -1,6 +1,15 @@
+---
+description: 在 dev/review/research 三种上下文间切换，按任务类型调整行为和输出风格。
+---
+
 # Context 命令
 
 切换工作模式上下文，调整 Claude 的行为风格。
+
+> 为了团队与个人更易理解，也可直接使用三个显式命令：
+> - `/ucc-context-dev`
+> - `/ucc-context-review`
+> - `/ucc-context-research`
 
 ## 用法
 

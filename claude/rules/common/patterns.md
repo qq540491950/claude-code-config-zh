@@ -8,31 +8,6 @@
 
 **用途：** 创建对象时不暴露创建逻辑
 
-**Python 示例：**
-```python
-from dataclasses import dataclass
-from typing import Protocol
-
-class Animal(Protocol):
-    def speak(self) -> str: ...
-
-@dataclass(frozen=True)
-class Dog:
-    def speak(self) -> str:
-        return "汪汪"
-
-@dataclass(frozen=True)
-class Cat:
-    def speak(self) -> str:
-        return "喵喵"
-
-def create_animal(animal_type: str) -> Animal:
-    animals = {"dog": Dog, "cat": Cat}
-    if animal_type not in animals:
-        raise ValueError(f"Unknown animal: {animal_type}")
-    return animals[animal_type]()
-```
-
 **TypeScript 示例：**
 ```typescript
 interface Animal {
@@ -64,46 +39,41 @@ function createAnimal(type: string): Animal {
 
 **用途：** 分步骤创建复杂对象
 
-**Python 示例：**
-```python
-from dataclasses import dataclass
+**TypeScript 示例：**
+```typescript
+type RequestConfig = {
+  url: string
+  method: 'GET' | 'POST'
+  timeout: number
+  headers: Record<string, string>
+}
 
-@dataclass(frozen=True)
-class RequestConfig:
-    url: str
-    method: str
-    headers: dict
-    timeout: int
-    retries: int
+class RequestBuilder {
+  private config: RequestConfig
 
-class RequestBuilder:
-    def __init__(self, url: str):
-        self._url = url
-        self._method = "GET"
-        self._headers = {}
-        self._timeout = 30
-        self._retries = 3
+  constructor(url: string) {
+    this.config = { url, method: 'GET', timeout: 30000, headers: {} }
+  }
 
-    def method(self, method: str) -> "RequestBuilder":
-        self._method = method
-        return self
+  method(value: RequestConfig['method']): RequestBuilder {
+    this.config = { ...this.config, method: value }
+    return this
+  }
 
-    def header(self, key: str, value: str) -> "RequestBuilder":
-        self._headers = {**self._headers, key: value}
-        return self
+  timeout(ms: number): RequestBuilder {
+    this.config = { ...this.config, timeout: ms }
+    return this
+  }
 
-    def timeout(self, seconds: int) -> "RequestBuilder":
-        self._timeout = seconds
-        return self
+  header(key: string, value: string): RequestBuilder {
+    this.config = { ...this.config, headers: { ...this.config.headers, [key]: value } }
+    return this
+  }
 
-    def build(self) -> RequestConfig:
-        return RequestConfig(
-            url=self._url,
-            method=self._method,
-            headers=self._headers,
-            timeout=self._timeout,
-            retries=self._retries,
-        )
+  build(): RequestConfig {
+    return { ...this.config, headers: { ...this.config.headers } }
+  }
+}
 ```
 
 ## 结构型模式
@@ -138,24 +108,22 @@ class LoggerAdapter implements Logger {
 
 **用途：** 动态添加功能而不修改原有结构
 
-**Python 示例：**
-```python
-from functools import wraps
-import time
+**JavaScript 示例：**
+```javascript
+function withTiming(fn) {
+  return async function (...args) {
+    const started = Date.now()
+    try {
+      return await fn.apply(this, args)
+    } finally {
+      console.log(`${fn.name} 耗时: ${Date.now() - started}ms`)
+    }
+  }
+}
 
-def measure_time(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start = time.perf_counter()
-        result = func(*args, **kwargs)
-        end = time.perf_counter()
-        print(f"{func.__name__} 执行时间: {end - start:.4f}秒")
-        return result
-    return wrapper
-
-@measure_time
-def process_data(data: list) -> list:
-    return [x * 2 for x in data]
+const fetchWithTiming = withTiming(async function fetchUser(id) {
+  return { id, name: 'Alice' }
+})
 ```
 
 ### 5. 代理模式 (Proxy Pattern)
@@ -197,53 +165,27 @@ class CachingProxy implements DataService {
 
 **用途：** 定义一系列算法，让它们可以互换
 
-**Python 示例：**
-```python
-from typing import Protocol
+**Go 示例：**
+```go
+package sortx
 
-class SortStrategy(Protocol):
-    def sort(self, data: list) -> list: ...
+type SortStrategy interface {
+	Sort([]int) []int
+}
 
-class QuickSort:
-    def sort(self, data: list) -> list:
-        if len(data) <= 1:
-            return data
-        pivot = data[len(data) // 2]
-        left = [x for x in data if x < pivot]
-        middle = [x for x in data if x == pivot]
-        right = [x for x in data if x > pivot]
-        return self.sort(left) + middle + self.sort(right)
+type BubbleSort struct{}
 
-class MergeSort:
-    def sort(self, data: list) -> list:
-        if len(data) <= 1:
-            return data
-        mid = len(data) // 2
-        left = self.sort(data[:mid])
-        right = self.sort(data[mid:])
-        return self._merge(left, right)
-
-    def _merge(self, left: list, right: list) -> list:
-        result = []
-        i = j = 0
-        while i < len(left) and j < len(right):
-            if left[i] <= right[j]:
-                result.append(left[i])
-                i += 1
-            else:
-                result.append(right[j])
-                j += 1
-        return result + left[i:] + right[j:]
-
-class Sorter:
-    def __init__(self, strategy: SortStrategy):
-        self._strategy = strategy
-
-    def set_strategy(self, strategy: SortStrategy) -> None:
-        self._strategy = strategy
-
-    def sort(self, data: list) -> list:
-        return self._strategy.sort(data)
+func (BubbleSort) Sort(in []int) []int {
+	out := append([]int(nil), in...)
+	for i := 0; i < len(out); i++ {
+		for j := 0; j < len(out)-1-i; j++ {
+			if out[j] > out[j+1] {
+				out[j], out[j+1] = out[j+1], out[j]
+			}
+		}
+	}
+	return out
+}
 ```
 
 ### 7. 观察者模式 (Observer Pattern)
@@ -325,19 +267,6 @@ class WriteCommand implements Command {
 
 **原则：** 始终返回新对象，永不修改原对象
 
-**Python 示例：**
-```python
-from dataclasses import dataclass
-
-@dataclass(frozen=True)
-class User:
-    name: str
-    email: str
-
-def update_email(user: User, new_email: str) -> User:
-    return User(name=user.name, email=new_email)
-```
-
 **TypeScript 示例：**
 ```typescript
 interface User {
@@ -398,26 +327,6 @@ class UserService {
 }
 ```
 
-**Python 示例：**
-```python
-from typing import Protocol
-
-class Logger(Protocol):
-    def log(self, message: str) -> None: ...
-
-class Database(Protocol):
-    async def find(self, id: str) -> "User": ...
-
-class UserService:
-    def __init__(self, logger: Logger, db: Database):
-        self._logger = logger
-        self._db = db
-
-    async def get_user(self, id: str) -> "User":
-        self._logger.log(f"Getting user: {id}")
-        return await self._db.find(id)
-```
-
 ## 错误处理模式
 
 ### Result 类型
@@ -441,32 +350,6 @@ if (result.success) {
 } else {
   console.error(result.error);
 }
-```
-
-**Python 示例：**
-```python
-from dataclasses import dataclass
-from typing import Generic, TypeVar, Union
-
-T = TypeVar("T")
-E = TypeVar("E")
-
-@dataclass(frozen=True)
-class Success(Generic[T]):
-    value: T
-    success: bool = True
-
-@dataclass(frozen=True)
-class Failure(Generic[E]):
-    error: E
-    success: bool = False
-
-Result = Union[Success[T], Failure[E]]
-
-def divide(a: float, b: float) -> Result[float, str]:
-    if b == 0:
-        return Failure("Division by zero")
-    return Success(a / b)
 ```
 
 ## 模式选择指南

@@ -4,7 +4,7 @@ const path = require('path')
 
 const root = path.resolve(__dirname, '..')
 
-const bannedSlashCommands = [
+const legacySlashCommands = [
   '/plan',
   '/tdd',
   '/code-review',
@@ -25,117 +25,140 @@ const bannedSlashCommands = [
   '/refactor-clean',
 ]
 
-const bannedCommandFiles = [
-  'commands/plan.md',
-  'commands/tdd.md',
-  'commands/code-review.md',
-  'commands/learn.md',
-  'commands/skill-create.md',
-  'commands/javascript-review.md',
-  'commands/go-review.md',
-  'commands/go-test.md',
-  'commands/go-build.md',
-  'commands/test-coverage.md',
-  'commands/e2e.md',
-  'commands/verify.md',
-  'commands/checkpoint.md',
-  'commands/context.md',
-  'commands/build-fix.md',
-  'commands/update-docs.md',
-  'commands/sessions.md',
-  'commands/refactor-clean.md',
-  // Windows 示例
-  'commands\\plan.md',
-  'commands\\tdd.md',
-  'commands\\code-review.md',
-  'commands\\learn.md',
-  'commands\\skill-create.md',
-  'commands\\javascript-review.md',
-  'commands\\go-review.md',
-  'commands\\go-test.md',
-  'commands\\go-build.md',
-  'commands\\test-coverage.md',
-  'commands\\e2e.md',
-  'commands\\verify.md',
-  'commands\\checkpoint.md',
-  'commands\\context.md',
-  'commands\\build-fix.md',
-  'commands\\update-docs.md',
-  'commands\\sessions.md',
-  'commands\\refactor-clean.md',
+const legacyCommandFileNames = [
+  'plan',
+  'tdd',
+  'code-review',
+  'learn',
+  'skill-create',
+  'javascript-review',
+  'go-review',
+  'go-test',
+  'go-build',
+  'test-coverage',
+  'e2e',
+  'verify',
+  'checkpoint',
+  'context',
+  'build-fix',
+  'update-docs',
+  'sessions',
+  'refactor-clean',
 ]
 
-const scanExtensions = new Set(['.md', '.js', '.json'])
-const ignoreDirs = new Set(['.git', 'node_modules', 'dist', 'build', 'out', '.next', '.turbo'])
+// 仅扫描用户入口文档和工作流说明，避免测试/脚本中的自引用误报。
+const scanTargets = ['README.md', 'CLAUDE.md', 'docs', 'commands']
+const scanExtension = '.md'
 
-function listFilesRec(dir) {
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+const slashCommandRules = legacySlashCommands.map((command) => ({
+  needle: command,
+  // 仅命中独立命令，避免将 tests/e2e 等路径误识别为 /e2e 命令。
+  regex: new RegExp(`(^|[^\\w-])(${escapeRegExp(command)})(?![\\w-])`),
+}))
+
+const legacyCommandFileRules = legacyCommandFileNames.map((name) => ({
+  needle: `commands/${name}.md`,
+  regex: new RegExp(`(^|[^\\w.-])(commands[\\\\/]${escapeRegExp(name)}\\.md)(?![\\w.-])`, 'i'),
+}))
+
+function normalizePath(relPath) {
+  return relPath.replace(/\\/g, '/')
+}
+
+function isScannableFile(relPath) {
+  return relPath.toLowerCase().endsWith(scanExtension)
+}
+
+function listTargetFiles(baseDir, target) {
+  const absTarget = path.join(baseDir, target)
+  if (!fs.existsSync(absTarget)) return []
+
+  const stats = fs.statSync(absTarget)
+  if (stats.isFile()) {
+    return [absTarget]
+  }
+
   /** @type {string[]} */
-  const results = []
+  const files = []
 
-  /** @param {string} current */
   function walk(current) {
     const entries = fs.readdirSync(current, { withFileTypes: true })
     for (const entry of entries) {
       const full = path.join(current, entry.name)
-
       if (entry.isDirectory()) {
-        if (ignoreDirs.has(entry.name)) continue
         walk(full)
         continue
       }
-
-      if (!entry.isFile()) continue
-      const ext = path.extname(entry.name).toLowerCase()
-      if (!scanExtensions.has(ext)) continue
-      results.push(full)
+      if (entry.isFile() && isScannableFile(path.relative(baseDir, full))) {
+        files.push(full)
+      }
     }
   }
 
-  walk(dir)
-  return results
+  walk(absTarget)
+  return files
 }
 
-function scanFile(absPath) {
-  let text
-  try {
-    text = fs.readFileSync(absPath, 'utf8')
-  } catch {
-    return []
+function listFilesForScan() {
+  const files = []
+  for (const target of scanTargets) {
+    files.push(...listTargetFiles(root, target))
   }
+  return files.sort()
+}
 
-  const rel = path.relative(root, absPath)
-  const lines = text.split(/\r?\n/)
-  /** @type {{needle: string, line: number, preview: string}[]} */
+function scanLine(lineText) {
+  /** @type {{needle: string, preview: string}[]} */
   const hits = []
 
-  for (let i = 0; i < lines.length; i++) {
-    const lineText = lines[i]
-
-    for (const needle of bannedSlashCommands) {
-      const idx = lineText.indexOf(needle)
-      if (idx !== -1) {
-        hits.push({ needle, line: i + 1, preview: lineText.trim().slice(0, 240) })
-      }
-    }
-
-    for (const needle of bannedCommandFiles) {
-      const idx = lineText.indexOf(needle)
-      if (idx !== -1) {
-        hits.push({ needle, line: i + 1, preview: lineText.trim().slice(0, 240) })
-      }
+  for (const rule of slashCommandRules) {
+    if (rule.regex.test(lineText)) {
+      hits.push({ needle: rule.needle, preview: lineText.trim().slice(0, 240) })
     }
   }
 
-  return hits.map((h) => ({ ...h, file: rel }))
+  for (const rule of legacyCommandFileRules) {
+    if (rule.regex.test(lineText)) {
+      hits.push({ needle: rule.needle, preview: lineText.trim().slice(0, 240) })
+    }
+  }
+
+  return hits
 }
 
-const files = listFilesRec(root)
 /** @type {{file: string, needle: string, line: number, preview: string}[]} */
 const allHits = []
 
-for (const abs of files) {
-  allHits.push(...scanFile(abs))
+for (const absPath of listFilesForScan()) {
+  const relPath = normalizePath(path.relative(root, absPath))
+  const lines = fs.readFileSync(absPath, 'utf8').split(/\r?\n/)
+
+  for (let i = 0; i < lines.length; i++) {
+    const lineHits = scanLine(lines[i])
+    lineHits.forEach((hit) => {
+      allHits.push({
+        file: relPath,
+        needle: hit.needle,
+        line: i + 1,
+        preview: hit.preview,
+      })
+    })
+  }
 }
+
+// 回归场景: 路径片段 tests/e2e 不应被误判为旧命令。
+assert.strictEqual(scanLine('testDir: ./tests/e2e').length, 0)
+// 回归场景: 测试文件自引用不会进入扫描范围。
+assert.strictEqual(
+  listFilesForScan().some((p) => normalizePath(path.relative(root, p)) === 'tests/command-namespace.test.js'),
+  false,
+)
+// 回归场景: 用户入口文档中的旧命令应被检测到。
+assert.ok(scanLine('请先运行 /plan').some((hit) => hit.needle === '/plan'))
 
 if (allHits.length > 0) {
   const msg = allHits

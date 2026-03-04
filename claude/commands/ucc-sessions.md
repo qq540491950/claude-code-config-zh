@@ -1,3 +1,7 @@
+---
+description: 管理本地会话历史，支持列表、加载、别名、信息查看与会话检索。
+---
+
 # Sessions 命令
 
 管理 Claude Code 会话历史 - 列出、加载、别名和编辑存储在 `~/.claude/sessions/` 中的会话。

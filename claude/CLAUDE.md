@@ -31,7 +31,7 @@
 claude/
 ├── CLAUDE.md              # 主入口配置
 ├── agents/                # 专业代理定义（12个）
-├── commands/              # 斜杠命令（18个）
+├── commands/              # 斜杠命令（21个）
 ├── contexts/              # 动态上下文注入（3个模式）
 │   ├── dev.md             # 开发模式上下文
 │   ├── review.md          # 审查模式上下文
@@ -176,7 +176,10 @@ claude/
 
 | 命令 | 用途 |
 |------|------|
-| `/ucc-context` | 切换工作模式（dev/review/research）|
+| `/ucc-context-dev` | 快速切换到开发模式 |
+| `/ucc-context-review` | 快速切换到审查模式 |
+| `/ucc-context-research` | 快速切换到研究模式 |
+| `/ucc-context` | 兼容入口：通过参数切换模式（dev/review/research） |
 | `/ucc-build-fix` | 修复构建错误 |
 | `/ucc-update-docs` | 同步更新文档 |
 | `/ucc-sessions` | 会话历史管理（列表、加载、别名）|
@@ -284,6 +287,7 @@ claude/
 | `filesystem` | 文件系统操作 | ⭐⭐⭐ |
 | `context7` | 实时文档查询 | ⭐⭐⭐ |
 | `sequential-thinking` | 链式推理 | ⭐⭐ |
+| `exa-web-search` | 网页搜索与研究 | ⭐⭐ |
 | `firecrawl` | 网页抓取 | ⭐⭐ |
 
 **使用方法**：复制需要的服务到 `~/.claude.json` 的 `mcpServers` 部分，替换 `YOUR_*_HERE` 为实际密钥。

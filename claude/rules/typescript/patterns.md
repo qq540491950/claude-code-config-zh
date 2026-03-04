@@ -2,8 +2,6 @@
 paths:
   - "**/*.ts"
   - "**/*.tsx"
-  - "**/*.js"
-  - "**/*.jsx"
   - "**/*.vue"
 ---
 # TypeScript/Vue 设计模式

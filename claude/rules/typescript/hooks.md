@@ -2,8 +2,6 @@
 paths:
   - "**/*.ts"
   - "**/*.tsx"
-  - "**/*.js"
-  - "**/*.jsx"
   - "**/*.vue"
 ---
 # TypeScript/Vue 钩子规则

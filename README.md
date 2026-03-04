@@ -13,6 +13,7 @@
 
 - 使用指南：`claude/README.md`
 - 主配置：`claude/CLAUDE.md`
+- 一键复制：`node claude/scripts/copy-config.js <目标目录>`
 - 配置校验：`node claude/scripts/validate-config.js`
 - 基础自测：`node claude/tests/run-all.js`
 

@@ -7,12 +7,15 @@ const root = path.resolve(__dirname, '..')
 
 const requiredFiles = [
   'README.md',
-  'AGENTS.md',
   'CLAUDE.md',
-  'docs/CUSTOMIZATION_GUIDE.md',
+  'docs/配置定制指南.md',
   'hooks/hooks.json',
   'mcp-configs/mcp-servers.json',
   'scripts/validate-config.js',
+  'scripts/copy-config.js',
+  'scripts/hooks/pretool-risk-blocker.js',
+  'scripts/hooks/pretool-sensitive-write-check.js',
+  'scripts/hooks/stop-delivery-reminder.js',
   'tests/run-all.js',
   'agents/doc-updater.md',
   'agents/e2e-runner.md',
@@ -22,6 +25,9 @@ const requiredFiles = [
   'commands/ucc-update-docs.md',
   'commands/ucc-e2e.md',
   'commands/ucc-context.md',
+  'commands/ucc-context-dev.md',
+  'commands/ucc-context-review.md',
+  'commands/ucc-context-research.md',
   'commands/ucc-go-test.md',
   'commands/ucc-go-build.md',
   'commands/ucc-learn.md',
@@ -40,7 +46,7 @@ const requiredFiles = [
 
 const expectedCounts = {
   agents: 12,
-  commands: 18,
+  commands: 21,
   contexts: 3,
   skills: 13,
 }
@@ -150,10 +156,8 @@ function validateCommandsFrontmatter() {
     const content = readText(rel)
 
     assert(content.trim().length > 0, `${rel} 内容为空`)
-
-    if (hasFrontmatter(content)) {
-      requireFrontmatterKeys(rel, ['description'])
-    }
+    assert(hasFrontmatter(content), `${rel} 缺少 YAML Frontmatter`)
+    requireFrontmatterKeys(rel, ['description'])
   }
 }
 
@@ -196,7 +200,7 @@ function validateHooksJson() {
 }
 
 function validateCustomizationGuideSnapshot() {
-  const guide = readText('docs/CUSTOMIZATION_GUIDE.md')
+  const guide = readText('docs/配置定制指南.md')
 
   const agentsMatch = guide.match(/agents\/\s+#\s*代理配置（(\d+)个）/)
   const commandsMatch = guide.match(/commands\/\s+#\s*斜杠命令（(\d+)个）/)
