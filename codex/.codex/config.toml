@@ -1,0 +1,17 @@
+# Codex 项目级配置（UCC）
+
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "cached"
+project_doc_fallback_filenames = ["TEAM_GUIDE.md", ".agents.md"]
+project_doc_max_bytes = 65536
+
+# 通过 notify 机制替代 Stop hook。
+notify = ["node", ".codex/scripts/notify-turn-end.js"]
+
+[features]
+collaboration_modes = true
+request_rule = true
+shell_tool = true
+multi_agent = false
+personality = true

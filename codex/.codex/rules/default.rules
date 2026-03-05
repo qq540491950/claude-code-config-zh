@@ -1,0 +1,33 @@
+# UCC 执行策略规则（Codex exec policy）
+
+prefix_rule(
+  pattern = ["rm", "-rf", "/"],
+  decision = "forbidden",
+  justification = "禁止删除根目录。",
+  match = ["rm -rf /"],
+  not_match = ["rm -rf ./tmp"],
+)
+
+prefix_rule(
+  pattern = ["rm", "-rf"],
+  decision = "prompt",
+  justification = "递归强删命令需人工确认。",
+  match = ["rm -rf ./build", "rm -rf dist"],
+  not_match = ["rm ./tmp.txt"],
+)
+
+prefix_rule(
+  pattern = ["git", "push", ["--force", "--force-with-lease"]],
+  decision = "prompt",
+  justification = "强推会改写远端历史，必须人工确认。",
+  match = ["git push --force origin main", "git push --force-with-lease origin feature/x"],
+  not_match = ["git push origin main"],
+)
+
+prefix_rule(
+  pattern = ["powershell", "-Command", "Remove-Item"],
+  decision = "prompt",
+  justification = "PowerShell 删除命令需人工确认。",
+  match = ["powershell -Command Remove-Item -Recurse -Force .\\dist"],
+  not_match = ["powershell -Command Get-ChildItem"],
+)

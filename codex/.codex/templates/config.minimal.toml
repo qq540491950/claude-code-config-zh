@@ -1,0 +1,22 @@
+# 最小可用模板（个人快速启动）
+
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "cached"
+project_doc_fallback_filenames = ["TEAM_GUIDE.md", ".agents.md"]
+project_doc_max_bytes = 65536
+notify = ["node", ".codex/scripts/notify-turn-end.js"]
+
+[features]
+collaboration_modes = true
+request_rule = true
+shell_tool = true
+multi_agent = false
+
+[mcp_servers.filesystem]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-filesystem", "YOUR_PROJECTS_DIR_HERE"]
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@context7/mcp-server"]

@@ -1,0 +1,85 @@
+---
+name: ucc-verify
+description: 对当前代码库状态运行全面验证。
+---
+
+# ucc-verify
+
+This skill is migrated from legacy command `ucc-verify` and is now executed via Codex Skills.
+
+## Trigger
+
+- Explicit call: `$ucc-verify`
+- Or natural-language request that matches this workflow
+
+## Input
+
+- User request and current repository context
+- Parse parameters based on the usage section below
+
+## Output
+
+- Return actionable result, review, or plan
+- If UCC semantic is active, append: `?????UCC`
+
+## Workflow
+
+# Verify 命令
+
+对当前代码库状态运行全面验证。
+
+## 指令
+
+按以下确切顺序执行验证：
+
+1. **构建检查**
+   - 运行此项目的构建命令
+   - 如失败，报告错误并停止
+
+2. **类型检查**
+   - 运行 TypeScript/类型检查器
+   - 报告所有错误及 file:line
+
+3. **代码检查**
+   - 运行 linter
+   - 报告警告和错误
+
+4. **测试套件**
+   - 运行所有测试
+   - 报告通过/失败数量
+   - 报告覆盖率百分比
+
+5. **Console.log 审计**
+   - 在源文件中搜索 console.log
+   - 报告位置
+
+6. **Git 状态**
+   - 显示未提交的更改
+   - 显示上次提交后修改的文件
+
+## 输出
+
+生成简洁的验证报告：
+
+```
+验证结果: [通过/失败]
+
+构建:    [OK/失败]
+类型:    [OK/X 错误]
+检查:    [OK/X 问题]
+测试:    [X/Y 通过, Z% 覆盖率]
+密钥:    [OK/发现 X 个]
+日志:    [OK/X 个 console.logs]
+
+可提交 PR: [是/否]
+```
+
+如有任何关键问题，列出并提供修复建议。
+
+## 参数
+
+$ARGUMENTS 可以是：
+- `quick` - 仅构建 + 类型
+- `full` - 所有检查（默认）
+- `pre-commit` - 与提交相关的检查
+- `pre-pr` - 完整检查加安全扫描
